@@ -1,6 +1,5 @@
 use std::ops::{Add, Sub};
-use std::fmt::{Display, Formatter, Error};
-use std::cmp::max;
+use std::fmt::{Debug, Display, Formatter, Error};
 use std::char;
 
 /// `BigNum` takes number of arbitrary size in the form of a `&str`,
@@ -12,6 +11,11 @@ pub struct BigNum {
     digits: usize
 }
 
+pub enum bErr {
+    Empty
+    NonDigits
+}
+
 impl Display for BigNum {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         write!(f, "{}", self.raw.iter().
@@ -20,6 +24,23 @@ impl Display for BigNum {
     }
 }
 
+impl Debug for BigNum {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{:?}", self.raw)
+    }
+}
+
+impl PartialEq for BigNum {
+    fn eq(&self, other: &BigNum) -> bool {
+        self.raw == other.raw
+    }
+
+    fn ne(&self, other: &BigNum) -> bool {
+        self.raw != other.raw
+    }
+}
+
+impl Eq for BigNum { }
 
 impl<'a> Add for &'a BigNum {
     type Output = BigNum;
@@ -70,9 +91,16 @@ impl<'a> Sub for &'a BigNum {
     }
 }
 
+impl Error for BigNum
+
+impl FromStr for BigNum{
+    fn from_str(s: &str) -> Result<BigNum, BigNum::Err> {
+
+    }
+}
 
 impl BigNum {
-    /// Constructs a new `BigNum` from a passed `&str`.
+    /// Constructs a new `BigNum` from a passed integer.
     /// Filters all non-digits present in the string
     ///
     /// # Examples
@@ -80,8 +108,8 @@ impl BigNum {
     /// ```
     /// extern crate bignum;
     ///
-    /// let a = bignum::BigNum::new("12345567") // 12345567
-    /// let b = bignum::BigNum::new("a123445")  // 123445
+    /// let a = bignum::BigNum::new("12345567"); // 12345567
+    /// let b = bignum::BigNum::new("a123445");  // 123445
     /// ```
     pub fn new(t_num: &str) -> BigNum {
         let filter_vec = t_num.chars().
@@ -89,4 +117,5 @@ impl BigNum {
             collect::<Vec<_>>();
         BigNum { digits: filter_vec.len(), raw: filter_vec }
     }
+
 }
