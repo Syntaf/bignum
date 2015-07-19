@@ -1,6 +1,7 @@
 use std::ops::{Add, Sub};
 use std::fmt::{Display, Formatter, Error};
 use std::cmp::max;
+use std::char;
 
 pub struct BigNum {
     raw: Vec<u32>,
@@ -9,7 +10,9 @@ pub struct BigNum {
 
 impl Display for BigNum {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "{:?}", self.raw)
+        write!(f, "{}", self.raw.iter().
+               filter_map(|a| char::from_u32(*a + 0x30)).
+               collect::<String>())
     }
 }
 
