@@ -27,27 +27,30 @@ impl<'a> Add for &'a BigNum {
     fn add(self, op: &'a BigNum) -> BigNum {
         let (larger, smaller) = 
             if self.digits > op.digits {
-                (&self, &op)
+                (self.raw.iter().rev(), op.raw.iter().rev())
             } else {
-                (&op, &self)
+                (op.raw.iter().rev(), self.raw.iter().rev())
             };
         
         let mut carry = 0;
         let mut result: Vec<u32>  = Vec::with_capacity(larger.digits);
         
-        for x in larger.raw.iter().zip(
-                smaller.raw.iter().
-                map(|v| Some(v)).
-                chain(::std::iter::repeat(None))).
-            collect::<Vec<_>>().iter().rev() {
-            let idx_add = match x.1 {
+        for x in larger.zip(
+                            smaller.map(|v| Some(v))
+                                   .chain(::std::iter::repeat(None))) {
+            let mut idx_add = match x.1 {
                 Some(y) => { x.0 + y + carry},
                 None    => { x.0 + carry}
             };
 
             carry = idx_add / 10;
+            idx_add = idx_add % 10;
 
             result.push(idx_add);
+        }
+
+        if carry != 0 {
+            result.push(carry);
         }
 
         let len = result.len();

@@ -11,4 +11,10 @@ fn main() {
 
     let c = &a + &b;
     println!("Adding {a} + {b} = {c}", a=a, b=b, c=c);
+
+    let n = bignum::BigNum::new("1631015");
+    let p = bignum::BigNum::new("19950716");
+
+    let o = &n + &p;
+    println!("Adding {n} + {p} = {o}", n=n, p=p, o=o);
 }
