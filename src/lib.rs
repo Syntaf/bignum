@@ -33,7 +33,7 @@ impl<'a> Add for &'a BigNum {
             };
         
         let mut carry = 0;
-        let mut result: Vec<u32>  = Vec::with_capacity(larger.digits);
+        let mut result: Vec<u32>  = Vec::new();
         
         for x in larger.zip(
                             smaller.map(|v| Some(v))
@@ -53,11 +53,9 @@ impl<'a> Add for &'a BigNum {
             result.push(carry);
         }
 
-        let len = result.len();
-
         BigNum { 
-            raw: result.into_iter().rev().collect::<Vec<_>>(), 
-            digits: len
+            digits: result.len(),
+            raw: result.into_iter().rev().collect::<Vec<_>>() 
         }
         
     }
