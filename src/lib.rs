@@ -1,7 +1,6 @@
 use std::ops::{Add, Sub};
 use std::fmt::{Display, Formatter, Error};
 use std::cmp::max;
-use std::iter::Zip;
 
 pub struct BigNum {
     raw: Vec<u32>,
@@ -19,10 +18,18 @@ impl<'a> Add for &'a BigNum {
     type Output = BigNum;
 
     fn add(self, op: &'a BigNum) -> BigNum {
-        let ciel = max(self.digits, op.digits);
+        let (larger, smaller) = if self.digits > op.digits {
+            (&self, &op)
+        } else {
+            (&op, &self)
+        };
         let mut carry = 0;
-        for (x, y) in self.raw.iter().zip(op.raw.iter()) {
-            println!("{}, {}", x, y);
+        for x in larger.raw.iter().zip(
+                smaller.raw.iter().
+                map(|v| Some(v)).
+                chain(::std::iter::repeat(None))).
+            collect::<Vec<_>>().iter().rev() {
+            println!("{}, {}", x.0, x.1.unwrap());
         }
 
         BigNum::new("12345")
