@@ -87,7 +87,6 @@ impl BigNum {
         let filter_vec = t_num.chars().
             filter_map(|a| a.to_digit(10)).
             collect::<Vec<_>>();
-        let t_digits = filter_vec.len();
-        BigNum { raw: filter_vec, digits: t_digits }
+        BigNum { digits: filter_vec.len(), raw: filter_vec }
     }
 }
