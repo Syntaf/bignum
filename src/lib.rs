@@ -21,15 +21,15 @@ impl<'a> Add for &'a BigNum {
     }
 }
 
-/*
-impl<'b> Sub for &'b BigNum {
+
+impl<'a> Sub for &'a BigNum {
     type Output = BigNum;
 
-    fn sub(self, op: BigNum) -> BigNum {
+    fn sub(self, op: &'a BigNum) -> BigNum {
         BigNum::new("12345678".to_string())
     }
 }
-*/
+
 
 impl BigNum {
     pub fn new<S>(t_num: S) -> BigNum where S: Into<String> {
