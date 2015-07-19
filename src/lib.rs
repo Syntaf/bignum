@@ -25,21 +25,38 @@ impl<'a> Add for &'a BigNum {
     type Output = BigNum;
 
     fn add(self, op: &'a BigNum) -> BigNum {
-        let (larger, smaller) = if self.digits > op.digits {
-            (&self, &op)
-        } else {
-            (&op, &self)
-        };
+        let (larger, smaller) = 
+            if self.digits > op.digits {
+                (&self, &op)
+            } else {
+                (&op, &self)
+            };
+        
         let mut carry = 0;
+        let mut result: Vec<u32>  = Vec::with_capacity(larger.digits);
+        
         for x in larger.raw.iter().zip(
                 smaller.raw.iter().
                 map(|v| Some(v)).
                 chain(::std::iter::repeat(None))).
             collect::<Vec<_>>().iter().rev() {
-            println!("{}, {}", x.0, x.1.unwrap());
+            let idx_add = match x.1 {
+                Some(y) => { x.0 + y + carry},
+                None    => { x.0 + carry}
+            };
+
+            carry = idx_add / 10;
+
+            result.push(idx_add);
         }
 
-        BigNum::new("12345")
+        let len = result.len();
+
+        BigNum { 
+            raw: result.into_iter().rev().collect::<Vec<_>>(), 
+            digits: len
+        }
+        
     }
 }
 
