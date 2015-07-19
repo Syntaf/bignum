@@ -1,3 +1,8 @@
+// Performs a simple addition between two BigNum
+// objects, 'a' and 'b'. The result is placed in
+// 'c' which is also a BigNum object. They are 
+// printed with the default formatter
+
 extern crate bignum;
 
 fn main() {

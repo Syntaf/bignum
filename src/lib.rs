@@ -3,6 +3,10 @@ use std::fmt::{Display, Formatter, Error};
 use std::cmp::max;
 use std::char;
 
+/// `BigNum` takes number of arbitrary size in the form of a `&str`,
+/// and allows numerous mathematical operations to be applied to itself.
+/// The focus of `BigNum` is to offer enough funcionality to simulate 
+/// starndard rust *dtypes*
 pub struct BigNum {
     raw: Vec<u32>,
     digits: usize
@@ -50,6 +54,17 @@ impl<'a> Sub for &'a BigNum {
 
 
 impl BigNum {
+    /// Constructs a new `BigNum` from a passed `&str`.
+    /// Filters all non-digits present in the string
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// extern crate bignum;
+    ///
+    /// let a = bignum::BigNum::new("12345567") // 12345567
+    /// let b = bignum::BigNum::new("a123445")  // 123445
+    /// ```
     pub fn new(t_num: &str) -> BigNum {
         let filter_vec = t_num.chars().
             filter_map(|a| a.to_digit(10)).
