@@ -14,9 +14,15 @@ pub struct BigNum {
 }
 
 #[derive(Debug)]
-pub enum Error {
+pub enum ErrorType {
     Empty,
     NonNumeric
+}
+
+#[derive(Debug)]
+pub struct Error {
+    error: ErrorType,
+    cause: String
 }
 
 impl Display for BigNum {
@@ -99,14 +105,16 @@ impl FromStr for BigNum{
     type Err = Error;
 
     fn from_str(s: &str) -> Result<BigNum, Error> {
-        let filter_vec = s.chars().
-            map(|a| match a.to_digit(10) {
-                Some(x) => { Ok(x) },
-                None    => { Err(Error::NonNumeric) }
-            }).collect::<Result<Vec<u32>, Error>>();
+        let mut data: Vec<u32> = Vec::new();
+        for ch in s.chars() {
+            match ch.to_digit(10) {
+                Some(y) => { data.push(y) }
+                None    => { return Err(Error{error: ErrorType::NonNumeric, 
+                                       cause: "Non digit found while parsing".to_string() }) }
+            }
+        }
 
-        Ok(BigNum { digits: if let Ok(ref v) = filter_vec { v.len() }, 
-                    raw: filter_vec })
+        Ok(BigNum { digits: data.len(), raw: data })
     }
 }
 
