@@ -6,6 +6,7 @@ extern crate bignum;
 use std::io::{BufReader, BufRead};
 use std::fs::File;
 use std::path::Path;
+use std::str::FromStr;
 
 fn main() {
     let file = File::open(&Path::new("examples/dat/euler_13.dat")).unwrap();
@@ -14,7 +15,7 @@ fn main() {
     // read each line and create a vector of BigNum objects
     let numbers: Vec<bignum::BigNum> = reader.lines()
         .filter_map(|x| match x {
-            Ok(y) => { Some(bignum::BigNum::new(&y)) },
+            Ok(y) => { Some(bignum::BigNum::from_str(&y).unwrap()) },
             _     => { None }
         }).collect();
 

@@ -1,6 +1,8 @@
 use std::ops::{Add, Sub};
-use std::fmt::{Debug, Display, Formatter, Error};
+use std::fmt::{Debug, Display, Formatter};
+use std::fmt::Error as fmt_Error;
 use std::char;
+use std::str::FromStr;
 
 /// `BigNum` takes number of arbitrary size in the form of a `&str`,
 /// and allows numerous mathematical operations to be applied to itself.
@@ -11,13 +13,14 @@ pub struct BigNum {
     digits: usize
 }
 
-pub enum bErr {
-    Empty
-    NonDigits
+#[derive(Debug)]
+pub enum Error {
+    Empty,
+    NonNumeric
 }
 
 impl Display for BigNum {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), fmt_Error> {
         write!(f, "{}", self.raw.iter().
                filter_map(|a| char::from_u32(*a + 0x30)).
                collect::<String>())
@@ -25,7 +28,7 @@ impl Display for BigNum {
 }
 
 impl Debug for BigNum {
-    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), fmt_Error> {
         write!(f, "{:?}", self.raw)
     }
 }
@@ -91,11 +94,19 @@ impl<'a> Sub for &'a BigNum {
     }
 }
 
-impl Error for BigNum
 
 impl FromStr for BigNum{
-    fn from_str(s: &str) -> Result<BigNum, BigNum::Err> {
+    type Err = Error;
 
+    fn from_str(s: &str) -> Result<BigNum, Error> {
+        let filter_vec = s.chars().
+            map(|a| match a.to_digit(10) {
+                Some(x) => { Ok(x) },
+                None    => { Err(Error::NonNumeric) }
+            }).collect::<Result<Vec<u32>, Error>>();
+
+        Ok(BigNum { digits: if let Ok(ref v) = filter_vec { v.len() }, 
+                    raw: filter_vec })
     }
 }
 
