@@ -1,8 +1,12 @@
+pub mod error;
 use std::ops::{Add, Sub};
 use std::fmt::{Debug, Display, Formatter};
 use std::fmt::Error as fmt_Error;
 use std::char;
 use std::str::FromStr;
+use error::{Error, ErrorType};
+
+
 
 /// `BigNum` takes number of arbitrary size in the form of a `&str`,
 /// and allows numerous mathematical operations to be applied to itself.
@@ -13,17 +17,6 @@ pub struct BigNum {
     digits: usize
 }
 
-#[derive(Debug)]
-pub enum ErrorType {
-    Empty,
-    NonNumeric
-}
-
-#[derive(Debug)]
-pub struct Error {
-    error: ErrorType,
-    cause: String
-}
 
 impl Display for BigNum {
     fn fmt(&self, f: &mut Formatter) -> Result<(), fmt_Error> {
@@ -109,8 +102,8 @@ impl FromStr for BigNum{
         for ch in s.chars() {
             match ch.to_digit(10) {
                 Some(y) => { data.push(y) }
-                None    => { return Err(Error{error: ErrorType::NonNumeric, 
-                                       cause: "Non digit found while parsing".to_string() }) }
+                None    => { return Err(Error::new(ErrorType::NonNumeric,
+                                                   "Non digit found while parsing")) }
             }
         }
 
