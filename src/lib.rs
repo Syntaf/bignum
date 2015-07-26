@@ -108,6 +108,7 @@ impl One for BigNum {
 impl FromStr for BigNum{
     type Err = Error;
 
+    /// doc test
     fn from_str(s: &str) -> Result<BigNum, Error> {
         let mut data: Vec<u32> = Vec::new();
         for ch in s.chars() {
@@ -123,16 +124,16 @@ impl FromStr for BigNum{
 }
 
 impl BigNum {
-    /// Contructs a new `BigNum` object from an existing or passed u32,
-    /// useful for setting initial values such as zero, one or any other.
+    /// Create a new `BigNum` object from a u32 value, useful to setting
+    /// the initial value of a BigNum object that lies inside the range of
+    /// a u32 value.
     ///
     /// # Examples
     ///
     /// ```
     /// extern crate bignum;
-    /// use num::traits::Zero
     ///
-    /// let a = bignum::BigNum::new(Zero::zero)
+    /// let a = bignum::BigNum::from_u32(12345);
     /// ```
     ///
     pub fn from_u32(num: u32) -> BigNum {
@@ -146,7 +147,19 @@ impl BigNum {
         }
         BigNum { digits: t_raw.len(), raw: t_raw.into_iter().rev().collect() }
     }
-
+    
+    /// Contructs a new `BigNum` object from an existing or passed u32,
+    /// useful for setting initial values such as zero, one or any other.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// extern crate bignum; 
+    /// use self::bignum::inits::Zero;
+    ///
+    /// let a = bignum::BigNum::new(bignum::inits::Zero::zero());
+    /// ```
+    ///
     pub fn new(base: BigNum) -> BigNum {
         BigNum { digits: base.digits, raw: base.raw.clone() }
     }

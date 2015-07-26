@@ -9,12 +9,22 @@ fn create_from_string() {
     let a = bignum::BigNum::from_str(&test).unwrap();
     let b = bignum::BigNum::from_str(&test2).unwrap();
 
-    assert_eq!(&a + &b, bignum::BigNum::new("246908"));
+    assert_eq!(&a + &b, bignum::BigNum::from_u32(246908));
+}
+
+#[test]
+fn crate_from_u32() {
+    let test = 12345;
+
+    let a = bignum::BigNum::from_u32(test);
+    let b = bignum::BigNum::from_u32(99999);
+
+    assert_eq!(&a + &b, bignum::BigNum::from_u32(112344));
 }
 
 #[test]
 fn adding_no_carry() {
     let a = bignum::BigNum::from_str("3333333333").unwrap();
-    assert_eq!(&a + &a, bignum::BigNum::new("6666666666"));
+    assert_eq!(&a + &a, bignum::BigNum::from_str("6666666666").unwrap());
 }
 

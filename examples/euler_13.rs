@@ -2,7 +2,7 @@
 /// Calculates the first ten digits of the sum of one-hundred 50-digit numbers.
 
 extern crate bignum;
-
+use bignum::inits::Zero;
 use std::io::{BufReader, BufRead};
 use std::fs::File;
 use std::path::Path;
@@ -19,7 +19,7 @@ fn main() {
             _     => { None }
         }).collect();
 
-    let mut result = bignum::BigNum::new("0");
+    let mut result = bignum::BigNum::new(Zero::zero());
     for datum in numbers {
         result = &result + &datum;
     }
