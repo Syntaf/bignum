@@ -131,8 +131,6 @@ impl BigNum {
     /// # Examples
     ///
     /// ```
-    /// extern crate bignum;
-    ///
     /// let a = bignum::BigNum::from_u32(12345);
     /// ```
     ///
@@ -154,10 +152,9 @@ impl BigNum {
     /// # Examples
     ///
     /// ```
-    /// extern crate bignum; 
-    /// use self::bignum::inits::Zero;
+    /// use bignum::inits::Zero;
     ///
-    /// let a = bignum::BigNum::new(bignum::inits::Zero::zero());
+    /// let a = bignum::BigNum::new(Zero::zero());
     /// ```
     ///
     pub fn new(base: BigNum) -> BigNum {

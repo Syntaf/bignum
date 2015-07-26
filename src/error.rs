@@ -1,12 +1,17 @@
 use std::fmt::{Debug, Formatter};
 use std::fmt::Error as fmt_Error;
 
+/// Enum type to specify *what* error happened, is used as a
+/// member type in `Error`
 #[derive(Debug)]
 pub enum ErrorType {
     Empty,
     NonNumeric
 }
 
+/// The Struct returned in `Result` when an Error is encountered, 
+/// likely in from_str when a non-numeric is found or if an empty
+/// string is passed. Contains the *type* of error, and the *cause*
 pub struct Error {
     error: ErrorType,
     cause: String
