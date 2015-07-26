@@ -1,12 +1,12 @@
 pub mod error;
+pub mod inits;
 use std::ops::{Add, Sub};
 use std::fmt::{Debug, Display, Formatter};
 use std::fmt::Error as fmt_Error;
 use std::char;
 use std::str::FromStr;
 use error::{Error, ErrorType};
-
-
+use inits::{Zero, One};
 
 /// `BigNum` takes number of arbitrary size in the form of a `&str`,
 /// and allows numerous mathematical operations to be applied to itself.
@@ -89,10 +89,21 @@ impl<'a> Sub for &'a BigNum {
     type Output = BigNum;
 
     fn sub(self, op: &'a BigNum) -> BigNum {
-        BigNum::new("12345678")
+        BigNum::new(Zero::zero())
     }
 }
 
+impl Zero for BigNum {
+    fn zero() -> BigNum {
+        BigNum { digits: 0, raw: Vec::new() }
+    }
+}
+
+impl One for BigNum {
+    fn one() -> BigNum { 
+        BigNum { digits: 1, raw: vec![1] }
+    }
+}
 
 impl FromStr for BigNum{
     type Err = Error;
@@ -112,22 +123,32 @@ impl FromStr for BigNum{
 }
 
 impl BigNum {
-    /// Constructs a new `BigNum` from a passed integer.
-    /// Filters all non-digits present in the string
+    /// Contructs a new `BigNum` object from an existing or passed u32,
+    /// useful for setting initial values such as zero, one or any other.
     ///
     /// # Examples
     ///
     /// ```
     /// extern crate bignum;
+    /// use num::traits::Zero
     ///
-    /// let a = bignum::BigNum::new("12345567"); // 12345567
-    /// let b = bignum::BigNum::new("a123445");  // 123445
+    /// let a = bignum::BigNum::new(Zero::zero)
     /// ```
-    pub fn new(t_num: &str) -> BigNum {
-        let filter_vec = t_num.chars().
-            filter_map(|a| a.to_digit(10)).
-            collect::<Vec<_>>();
-        BigNum { digits: filter_vec.len(), raw: filter_vec }
+    ///
+    pub fn from_u32(num: u32) -> BigNum {
+        let mut sig = num;
+        let mut cur;
+        let mut t_raw: Vec<u32> = Vec::new();
+        while sig > 0 {
+            cur = sig;
+            sig = sig / 10;
+            t_raw.push(cur - sig*10);
+        }
+        BigNum { digits: t_raw.len(), raw: t_raw.into_iter().rev().collect() }
+    }
+
+    pub fn new(base: BigNum) -> BigNum {
+        BigNum { digits: base.digits, raw: base.raw.clone() }
     }
 
 }

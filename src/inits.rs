@@ -1,9 +1,7 @@
-use bignum::BigNum;
-
-mod Zero {
-    const zero: BigNum = BigNum::from_u32(0).unwrap();
+pub trait Zero {
+    fn zero() -> Self;
 }
 
-mod One {
-    const one: BigNum = BigNum::from_32(1).unwrap();
+pub trait One {
+    fn one() -> Self;
 }
