@@ -5,6 +5,7 @@ use std::fmt::{Debug, Display, Formatter};
 use std::fmt::Error as fmt_Error;
 use std::char;
 use std::str::FromStr;
+use std::iter::repeat;
 use error::{Error, ErrorType};
 use inits::{Zero, One};
 
@@ -89,7 +90,29 @@ impl<'a> Sub for &'a BigNum {
     type Output = BigNum;
 
     fn sub(self, op: &'a BigNum) -> BigNum {
-        BigNum::new(Zero::zero())
+        if self.digits < op.digits {
+            panic!("Subtraction of unsigned numbers will result in a negative number");
+        }
+
+        let op1 = self.raw.iter().rev();
+        let op2 = op.raw.iter().rev();
+
+        let mut result: Vec<u32> = Vec::new();
+
+        for x in op1.zip(op2.map(|v| Some(v)).chain(repeat(None))) {
+            if let Some((x, y)) = 
+                match x.1 {
+                    Some(a) => { Some((x.0, a)) },
+                    None    => { None }
+                } {
+                result.push(x - y);
+            }
+        }
+
+        BigNum { 
+            digits: result.len(), 
+            raw: result.into_iter().rev().collect::<Vec<_>>() 
+        }
     }
 }
 
