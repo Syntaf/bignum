@@ -53,6 +53,15 @@ fn negative_result_subtract() {
 
 #[test]
 #[should_panic]
+fn negative_result_subract2() {
+    let a = bignum::BigNum::from_u32(10);
+    let b = bignum::BigNum::from_u32(20);
+
+    let _c = &a - &b;
+}
+
+#[test]
+#[should_panic]
 fn bad_string() {
     let _a = bignum::BigNum::from_str("123a456").unwrap();
 }
