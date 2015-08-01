@@ -94,11 +94,16 @@ impl<'a> Sub for &'a BigNum {
             panic!("Subtraction of unsigned numbers will result in a negative number");
         }
 
-        let op1 = self.raw.iter().rev();
-        let op2 = op.raw.iter().rev();
+        let mut op1 = &self.raw;
+        let mut op2 = &op.raw;
 
         let mut result: Vec<u32> = Vec::new();
 
+        for i in 0..op1.len() {
+            result.push(op1[i] - op2[i]);
+        }
+
+        /*
         for x in op1.zip(op2.map(|v| Some(v)).chain(repeat(None))) {
             if let Some((x, y)) = 
                 match x.1 {
@@ -108,6 +113,7 @@ impl<'a> Sub for &'a BigNum {
                 result.push(x - y);
             }
         }
+        */
 
         BigNum { 
             digits: result.len(), 
