@@ -61,7 +61,7 @@ impl<'a> Add for &'a BigNum {
         
         for x in larger.zip(
                             smaller.map(|v| Some(v))
-                                   .chain(::std::iter::repeat(None))) {
+                                   .chain(repeat(None))) {
             let mut idx_add = match x.1 {
                 Some(y) => { x.0 + y + carry},
                 None    => { x.0 + carry}
@@ -104,7 +104,14 @@ impl<'a> Sub for &'a BigNum {
         let mut result: Vec<u32> = Vec::new();
 
         for i in 0..op1.len() {
-            result.push(op1[i] - op2[i]);
+
+            let local_result = 
+                if op1[i].checked_sub(op2[i]) == None {
+                    0
+                } else {
+                    op1[i] - op2[i]
+                };
+            result.push(local_result);
         }
 
         BigNum { 
