@@ -99,23 +99,26 @@ impl<'a> Sub for &'a BigNum {
         }
 
         let mut op1 = self.raw.clone();
-        let mut op2 = &op.raw;
+        let op2 = &op.raw;
 
         let mut result: Vec<u32> = Vec::new();
 
         for i in (0..op1.len()).rev() {
 
             println!("{}, {} - {}", i, op1[i], op2[i]);
-            let local_result = 
+            let local_result: u32 = 
                 match op1[i].checked_sub(op2[i]) {
                     Some(r) => { r },
                     None    => {
-                        if op1[i-1] != 0 {
-                            op1[i-1] -= 1;
-                            op1[i] + 10 - op2[i]
-                        } else {
-                            0
+                        let mut borrow = 1;
+                        if op1[i-borrow] != 0 {
+                            op1[i-borrow] -= 1;
                         }
+                        while op1[i-borrow] == 0 {
+                            op1[i-borrow] == 9;
+                            borrow += 1;
+                        }
+                        op1[i] + 10 - op2[i]
                     }
                 };
             result.push(local_result);
