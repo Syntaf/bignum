@@ -58,10 +58,10 @@ impl<'a> Add for &'a BigNum {
         
         let mut carry = 0;
         let mut result: Vec<u32>  = Vec::new();
-        
-        for x in larger.zip(
-                            smaller.map(|v| Some(v))
-                                   .chain(repeat(None))) {
+
+        let zipped_iters = larger.zip(smaller.map(|v| Some(v)).chain(repeat(None)));
+
+        for x in zipped_iters {
             let mut idx_add = match x.1 {
                 Some(y) => { x.0 + y + carry},
                 None    => { x.0 + carry}
@@ -98,18 +98,25 @@ impl<'a> Sub for &'a BigNum {
             panic!("Subtraction of unsigned numbers will result in a negative number");
         }
 
-        let mut op1 = &self.raw;
+        let mut op1 = self.raw.clone();
         let mut op2 = &op.raw;
 
         let mut result: Vec<u32> = Vec::new();
 
-        for i in 0..op1.len() {
+        for i in (0..op1.len()).rev() {
 
+            println!("{}, {} - {}", i, op1[i], op2[i]);
             let local_result = 
-                if op1[i].checked_sub(op2[i]) == None {
-                    0
-                } else {
-                    op1[i] - op2[i]
+                match op1[i].checked_sub(op2[i]) {
+                    Some(r) => { r },
+                    None    => {
+                        if op1[i-1] != 0 {
+                            op1[i-1] -= 1;
+                            op1[i] + 10 - op2[i]
+                        } else {
+                            0
+                        }
+                    }
                 };
             result.push(local_result);
         }
