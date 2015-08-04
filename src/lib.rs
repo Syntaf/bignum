@@ -104,8 +104,6 @@ impl<'a> Sub for &'a BigNum {
         let mut result: Vec<u32> = Vec::new();
 
         for i in (0..op1.len()).rev() {
-
-            println!("{}, {} - {}", i, op1[i], op2[i]);
             let local_result: u32 = 
                 match op1[i].checked_sub(op2[i]) {
                     Some(r) => { r },
@@ -113,12 +111,15 @@ impl<'a> Sub for &'a BigNum {
                         let mut borrow = 1;
                         if op1[i-borrow] != 0 {
                             op1[i-borrow] -= 1;
+                            op1[i] + 10 - op2[i]
+                        } else {
+                            while op1[i-borrow] == 0 {
+                                op1[i-borrow] = 9;
+                                borrow += 1;
+                            }
+                            op1[i-borrow] -= 1;
+                            op1[i] + 10 - op2[i]
                         }
-                        while op1[i-borrow] == 0 {
-                            op1[i-borrow] == 9;
-                            borrow += 1;
-                        }
-                        op1[i] + 10 - op2[i]
                     }
                 };
             result.push(local_result);
