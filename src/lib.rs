@@ -103,22 +103,38 @@ impl<'a> Sub for &'a BigNum {
 
         let mut result: Vec<u32> = Vec::new();
 
-        for i in (0..op1.len()).rev() {
+        let op1_range = (0..op1.len()).rev();
+        let op2_range = (0..op2.len()).map(|x| Some(x)).rev();
+        let zipped = op1_range.zip(op2_range.chain(repeat(None)));
+
+        for (i, j) in zipped {
+            // If there are no digits left in the second vector, then
+            // simply make it zero
+            let sub = 
+                match j {
+                    Some(n) => { op2[n] },
+                    None    => { 0 }
+                };
+
+            // Result of digit subtraction
             let local_result: u32 = 
-                match op1[i].checked_sub(op2[i]) {
+                match op1[i].checked_sub(sub) {
                     Some(r) => { r },
                     None    => {
                         let mut borrow = 1;
                         if op1[i-borrow] != 0 {
                             op1[i-borrow] -= 1;
-                            op1[i] + 10 - op2[i]
+                            op1[i] + 10 - sub
                         } else {
-                            while op1[i-borrow] == 0 {
+                            while op1[i-borrow] == 0 && borrow < op1.len() {
                                 op1[i-borrow] = 9;
                                 borrow += 1;
                             }
+                            if op1[i-borrow] == 0 {
+                                panic!("Subtraction of unsigned numbers will result in negative number");
+                            }
                             op1[i-borrow] -= 1;
-                            op1[i] + 10 - op2[i]
+                            op1[i] + 10 - sub
                         }
                     }
                 };

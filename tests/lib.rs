@@ -1,6 +1,4 @@
 extern crate bignum;
-mod addition;
-mod subtraction;
 use std::str::FromStr;
 
 #[test]
