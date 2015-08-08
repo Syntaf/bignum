@@ -9,10 +9,25 @@ use std::iter::repeat;
 use error::{Error, ErrorType};
 use inits::{Zero, One};
 
-/// `BigNum` takes number of arbitrary size in the form of a `&str`,
-/// and allows numerous mathematical operations to be applied to itself.
-/// The focus of `BigNum` is to offer enough funcionality to simulate 
-/// starndard rust *dtypes*
+/// BigNum is designed to wrap a simple struct containing 
+/// a vector and offer the user to create these objects
+/// just as they would a standard type, but `BigNum` allows
+/// operations on an arbitrary size and is not limited to a 
+/// limit.
+///
+/// # Examples
+///
+/// ```
+/// use bignum::BigNum;
+/// use bignum::inits::{One, Zero};
+///
+/// let a = BigNum::from_u32(5);    // 5
+/// let b = &a + &One::one();       // 6
+///
+/// let c = &a + &b;                // 11
+/// let d = &c - &b;                // 5
+/// ```
+///
 pub struct BigNum {
     raw: Vec<u32>,
     digits: usize
@@ -119,8 +134,8 @@ impl<'a> Sub for &'a BigNum {
         // parent, op2 is mapped with an option because if op2_range
         // is not as large as op1_range, it will simply fill it with
         // a None value
-        let op1_range = (0..op1.digits).rev();
-        let op2_range = (0..op2.digits).map(|x| Some(x)).rev();
+        let op1_range = (0..self.digits).rev();
+        let op2_range = (0..op.digits).map(|x| Some(x)).rev();
         let zipped = op1_range.zip(op2_range.chain(repeat(None)));
 
         for (i, j) in zipped {
@@ -227,6 +242,22 @@ impl BigNum {
         BigNum { digits: t_raw.len(), raw: t_raw.into_iter().rev().collect() }
     }
     
+    /// Create a new `BigNum` object from a vector of u32 values
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let a = bignum::BigNum::from_vec(vec![1,1,1,1,1]);
+    /// ```
+    ///
+    pub fn from_vec(t_raw: Vec<u32>) -> BigNum {
+        BigNum { digits: t_raw.len(), raw: t_raw }
+    }
+
+    //pub fn from_slice(t_raw: &[u32]) -> BigNum {
+    //    
+    //}
+
     /// Contructs a new `BigNum` object from an existing or passed u32,
     /// useful for setting initial values such as zero, one or any other.
     ///
