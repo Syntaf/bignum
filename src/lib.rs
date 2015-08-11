@@ -1,6 +1,6 @@
 pub mod error;
 pub mod inits;
-use std::ops::{Add, Sub};
+use std::ops::{Add, Sub, Mul};
 use std::fmt::{Debug, Display, Formatter};
 use std::fmt::Error as fmt_Error;
 use std::char;
@@ -183,6 +183,14 @@ impl<'a> Sub for &'a BigNum {
             digits: result.len(), 
             raw: result.into_iter().rev().collect::<Vec<_>>() 
         }
+    }
+}
+
+impl<'a> Mul for &'a BigNum {
+    type Output = BigNum;
+
+    fn mul(self, rhs: &'a BigNum) -> BigNum {
+        BigNum{ digits: 0, raw: Vec::new() }
     }
 }
 
