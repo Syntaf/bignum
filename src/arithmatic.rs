@@ -1,6 +1,18 @@
 use error::*;
 use std::iter::repeat;
 
+/// Function that takes two vectors, each representing some atribtrary 
+/// unsigned values (e.g. `[1,2,3] = 123u32`), and return a result
+/// representing the addition between the two *numbers*.
+///
+/// # Examples
+///
+/// ```
+/// let a = vec![2,0,0,8];                              // 2008
+/// let b = vec![1,0,1,2,3];                            // 10123
+/// assert_eq!(vector_add(&a, &b), vec![1,2,1,3,1]);    // 2008 + 10123 = 12131
+/// ```
+///
 pub fn vector_add(lhs: &Vec<u32>, rhs: &Vec<u32>) -> Vec<u32> {
     // determine the largest of the two numbers, and return a tuple
     // of reversed iterators with that larger number taking precedence
@@ -42,6 +54,26 @@ pub fn vector_add(lhs: &Vec<u32>, rhs: &Vec<u32>) -> Vec<u32> {
     result.into_iter().rev().collect::<Vec<_>>()
 }
 
+/// Function that takes two vectors, each representing some arbitrary unsigned
+/// values (e.g. `[1,1,1] = 111u32`), and return a result representing the 
+/// subtraction between the two *numbers*. Returns a `Result` as some subtraction
+/// may result in an overflow, how the error is handled is up to the caller
+///
+/// Error type is `error::Error { error: UnsignedOverflow, cause: 'text' }`
+///
+/// # Examples
+///
+/// ```
+/// let a = vec![4,8,7];                                    // 487
+/// let b = vec![1,2,0];                                    // 120
+/// assert_eq!(vector_sub(&a, &b).unwrap(), vec![3,6,7]);   // 487 - 120 = 367
+/// 
+/// match vector_sub(&b, &a) {      
+///     Err(a) => { println!("{:?}", a); }                  // 120 - 487 = Err
+///     _      => { }
+/// }
+/// ```
+///
 pub fn vector_sub(lhs: &Vec<u32>, rhs: &Vec<u32>) -> Result<Vec<u32>, Error> {
     // easy checks to see if the result will be a negative number
     if lhs.len() < rhs.len() || (lhs.len() == rhs.len() && 
