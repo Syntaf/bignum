@@ -20,7 +20,7 @@ after_success:
 
 env:
     global:
-        - secure: "71975bc64a3a0955b60fb1a39e799bba40dbc6ba"
+        - secure: "GH_TOKEN=71975bc64a3a0955b60fb1a39e799bba40dbc6ba"
     
 
 
