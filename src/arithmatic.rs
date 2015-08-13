@@ -8,6 +8,8 @@ use std::iter::repeat;
 /// # Examples
 ///
 /// ```
+/// use bignum::arithmatic::vector_add;
+///
 /// let a = vec![2,0,0,8];                              // 2008
 /// let b = vec![1,0,1,2,3];                            // 10123
 /// assert_eq!(vector_add(&a, &b), vec![1,2,1,3,1]);    // 2008 + 10123 = 12131
@@ -64,6 +66,8 @@ pub fn vector_add(lhs: &Vec<u32>, rhs: &Vec<u32>) -> Vec<u32> {
 /// # Examples
 ///
 /// ```
+/// use bignum::arithmatic::vector_sub;
+///
 /// let a = vec![4,8,7];                                    // 487
 /// let b = vec![1,2,0];                                    // 120
 /// assert_eq!(vector_sub(&a, &b).unwrap(), vec![3,6,7]);   // 487 - 120 = 367
