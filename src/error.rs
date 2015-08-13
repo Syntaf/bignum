@@ -6,7 +6,8 @@ use std::fmt::Error as fmt_Error;
 #[derive(Debug)]
 pub enum ErrorType {
     Empty,
-    NonNumeric
+    NonNumeric,
+    UnsignedOverflow
 }
 
 /// The Struct returned in `Result` when an Error is encountered, 

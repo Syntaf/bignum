@@ -1,5 +1,6 @@
 pub mod error;
 pub mod inits;
+pub mod arithmatic;
 use std::ops::{Add, Sub, Mul};
 use std::fmt::{Debug, Display, Formatter};
 use std::fmt::Error as fmt_Error;
@@ -8,6 +9,7 @@ use std::str::FromStr;
 use std::iter::repeat;
 use error::{Error, ErrorType};
 use inits::{Zero, One};
+use arithmatic::{vector_add, vector_sub};
 
 /// BigNum is designed to wrap a simple struct containing 
 /// a vector and offer the user to create these objects
@@ -65,50 +67,13 @@ impl<'a> Add for &'a BigNum {
     type Output = BigNum;
 
     fn add(self, op: &'a BigNum) -> BigNum {
-        // determine the largest of the two numbers, and return a tuple
-        // of reversed iterators with that larger number taking precedence
-        let (larger, smaller) = 
-            if self.digits > op.digits {
-                (self.raw.iter().rev(), op.raw.iter().rev())
-            } else {
-                (op.raw.iter().rev(), self.raw.iter().rev())
-            };
-        
-        let mut carry = 0;
-        let mut result: Vec<u32>  = Vec::new();
-
-        // if the smaller number does not contain enough digits for the zip,
-        // it will instead be filled with `None` values to denote such
-        let zipped_iters = larger.zip(smaller.map(|v| Some(v)).chain(repeat(None)));
-        
-        for x in zipped_iters {
-            // return the result of adding the two operands together, making
-            // sure to take into account that `None` may appear meaning the
-            // second number is out of digits
-            let mut idx_add = match x.1 {
-                Some(y) => { x.0 + y + carry},
-                None    => { x.0 + carry}
-            };
-
-            // keep track of a carry which is applied to each addition result
-            carry = idx_add / 10;
-            idx_add = idx_add % 10;
-
-            result.push(idx_add);
-        }
-
-        // push the extra carry if it exists(e.g. is not zero)
-        if carry != 0 {
-            result.push(carry);
-        }
-
+        let result = vector_add(&self.raw, &op.raw);
         // return a BigNum representation of the result of addition between 
         // the two passed vectors
         BigNum { 
             digits: result.len(),
-            raw: result.into_iter().rev().collect::<Vec<_>>() 
-        }
-        
+            raw: result
+        } 
     }
 }
 
@@ -117,71 +82,13 @@ impl<'a> Sub for &'a BigNum {
     type Output = BigNum;
 
     fn sub(self, op: &'a BigNum) -> BigNum {
-        // easy checks to see if the result will be a negative number
-        if self.digits < op.digits || (self.digits == op.digits && 
-           self.raw[0] < op.raw[0]) {
-            panic!("Subtraction of unsigned numbers will result in a negative number");
-        }
-
-        // we will be mutating the values of op1 through borrowing, so
-        // it must be cloned, op2 however can simply be a reference
-        let mut op1 = self.raw.clone();
-        let op2 = &op.raw;
-
-        let mut result: Vec<u32> = Vec::new();
-
-        // create a zipped ranged of indices with op1_range being the
-        // parent, op2 is mapped with an option because if op2_range
-        // is not as large as op1_range, it will simply fill it with
-        // a None value
-        let op1_range = (0..self.digits).rev();
-        let op2_range = (0..op.digits).map(|x| Some(x)).rev();
-        let zipped = op1_range.zip(op2_range.chain(repeat(None)));
-
-        for (i, j) in zipped {
-            // if there are no digits left in the second vector, then
-            // simply make it zero
-            let sub = 
-                match j {
-                    Some(n) => { op2[n] },
-                    None    => { 0 }
-                };
-
-            // result of digit subtraction, Some means the result
-            // can easily be obtained, None denotes a borrow must
-            // take place
-            let local_result: u32 = 
-                match op1[i].checked_sub(sub) {
-                    Some(r) => { r },
-                    None    => {
-                        // if the next digit can be borrowed(not zero)
-                        // then borrow and return the correct result, otherwise
-                        // loop until something can be borrowed.
-                        let mut borrow = 1;
-                        if op1[i-borrow] != 0 {
-                            op1[i-borrow] -= 1;
-                            op1[i] + 10 - sub
-                        } else {
-                            while op1[i-borrow] == 0 && borrow < op1.len() {
-                                op1[i-borrow] = 9;
-                                borrow += 1;
-                            }
-                            if op1[i-borrow] == 0 {
-                                panic!("Subtraction of unsigned numbers will result in negative number");
-                            }
-                            op1[i-borrow] -= 1;
-                            op1[i] + 10 - sub
-                        }
-                    }
-                };
-            result.push(local_result);
-        }
-
-        // return a BigNum struct representing the result of the subtraction
-        // between the two structs
-        BigNum { 
-            digits: result.len(), 
-            raw: result.into_iter().rev().collect::<Vec<_>>() 
+        match vector_sub(&self.raw, &op.raw) {
+            Ok(a) => {
+                BigNum { digits: a.len(),
+                         raw: a
+                }
+            }
+            Err(e) => { panic!(e) }
         }
     }
 }
@@ -190,7 +97,23 @@ impl<'a> Mul for &'a BigNum {
     type Output = BigNum;
 
     fn mul(self, rhs: &'a BigNum) -> BigNum {
-        BigNum{ digits: 0, raw: Vec::new() }
+        let mut result: Vec<u32> = Vec::new();
+        // for each digit in the rhs of the statement, loop
+        // through the lhs and apply a multiplication. future
+        // iterations also insert '0' as the normal method would
+        for (index, rhs_val) in rhs.raw.iter().enumerate() {
+            let mut carry = 0;
+            let mut intermediate = (0..index).map(|_| 0).collect::<Vec<u32>>();
+            for lhs_val in &self.raw {
+                let mut idx_mul = lhs_val * rhs_val;
+                carry = idx_mul / 10;
+                idx_mul = idx_mul % 10;
+
+                intermediate.push(idx_mul);
+            }
+        }
+
+        BigNum { digits: 0, raw: Vec::new() }
     }
 }
 
