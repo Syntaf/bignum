@@ -6,7 +6,6 @@ use std::fmt::{Debug, Display, Formatter};
 use std::fmt::Error as fmt_Error;
 use std::char;
 use std::str::FromStr;
-use std::iter::repeat;
 use error::{Error, ErrorType};
 use inits::{Zero, One};
 use arithmatic::{vector_add, vector_sub};
@@ -101,19 +100,29 @@ impl<'a> Mul for &'a BigNum {
         // for each digit in the rhs of the statement, loop
         // through the lhs and apply a multiplication. future
         // iterations also insert '0' as the normal method would
-        for (index, rhs_val) in rhs.raw.iter().enumerate() {
+        for (index, rhs_val) in rhs.raw.iter().rev().enumerate() {
+            // each iteration of the right hand side numbers digit creates a resultant vector
+            // by multiplying itself to the lhs number. The intermediate result is then added
+            // to the final result.
             let mut carry = 0;
             let mut intermediate = (0..index).map(|_| 0).collect::<Vec<u32>>();
-            for lhs_val in &self.raw {
-                let mut idx_mul = lhs_val * rhs_val;
+            for lhs_val in self.raw.iter().rev() {
+                let mut idx_mul = lhs_val * rhs_val + carry;
                 carry = idx_mul / 10;
                 idx_mul = idx_mul % 10;
 
                 intermediate.push(idx_mul);
             }
+
+            // if a carry is left over then push it to the intermediate result
+            if carry != 0 {
+                intermediate.push(carry);
+            }
+
+            result = vector_add(&result, &intermediate.into_iter().rev().collect::<Vec<_>>());
         }
 
-        BigNum { digits: 0, raw: Vec::new() }
+        BigNum { digits: result.len(), raw: result }
     }
 }
 
