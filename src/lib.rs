@@ -1,7 +1,7 @@
 pub mod error;
 pub mod inits;
 pub mod arithmatic;
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Sub, Mul, Div};
 use std::fmt::{Debug, Display, Formatter};
 use std::fmt::Error as fmt_Error;
 use std::char;
@@ -114,6 +114,19 @@ impl<'a> Mul for &'a BigNum {
         }
 
         BigNum { digits: 0, raw: Vec::new() }
+    }
+}
+
+impl<'a> Div for &'a BigNum {
+    type Output = BigNum;
+
+    fn div(self, rhs: &'a BigNum) -> BigNum {
+        let mut result: Vec<u32> = Vec::new();
+        let mut current = 0;
+        for (index, lhs_val) in self.raw.iter().enumerate() {
+            current = 0;            
+        }
+        BigNum { digits: 0, raw: result }
     }
 }
 
