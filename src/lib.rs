@@ -126,15 +126,17 @@ impl<'a> Mul for &'a BigNum {
     }
 }
 
-impl<'a> Div for &'a BigNum {
+impl<'a> Div<u32> for &'a BigNum {
     type Output = BigNum;
 
-    fn div(self, rhs: &'a BigNum) -> BigNum {
+    fn div(self, rhs: u32) -> BigNum {
         let mut result: Vec<u32> = Vec::new();
-        let mut current = 0;
-        for (index, lhs_val) in self.raw.iter().enumerate() {
-            current = 0;            
+        let mut current = self.raw[0];
+        for idx in (1..self.digits).rev() {
+            println!("{}", current);
+            current = self.raw[idx];
         }
+        println!("{}", current);
         BigNum { digits: 0, raw: result }
     }
 }
