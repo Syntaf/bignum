@@ -27,6 +27,8 @@ use arithmatic::{vector_add, vector_sub};
 ///
 /// let c = &a + &b;                // 11
 /// let d = &c - &b;                // 5
+/// let e = &c * &d;                // 55
+/// let h = &e / 5;                 // 11
 /// ```
 ///
 pub struct BigNum {
