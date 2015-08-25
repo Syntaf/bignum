@@ -130,6 +130,11 @@ impl<'a> Div<u32> for &'a BigNum {
     type Output = BigNum;
 
     fn div(self, rhs: u32) -> BigNum {
+
+        if rhs == 0 {
+            panic!("divide by zero caught")
+        }
+
         let mut result: Vec<u32> = Vec::new();
         let mut i = self.raw.iter().peekable();
         let mut current: u32 = *i.next().unwrap();
@@ -144,7 +149,12 @@ impl<'a> Div<u32> for &'a BigNum {
             result.push(current / rhs);
             current = current % rhs;
         }
-        BigNum { digits: result.len() , raw: result }
+        
+        if result == vec![0] {
+            inits::Zero::zero()
+        } else {
+            BigNum { digits: result.len() , raw: result }
+        }
     }
 }
 
