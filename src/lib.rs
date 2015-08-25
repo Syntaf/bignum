@@ -131,13 +131,20 @@ impl<'a> Div<u32> for &'a BigNum {
 
     fn div(self, rhs: u32) -> BigNum {
         let mut result: Vec<u32> = Vec::new();
-        let mut current = self.raw[0];
-        for idx in (1..self.digits).rev() {
-            println!("{}", current);
-            current = self.raw[idx];
+        let mut i = self.raw.iter().peekable();
+        let mut current: u32 = *i.next().unwrap();
+        while let Some(_) = i.peek() {
+            if rhs > current {
+                let n_lhs_val = match i.next() {
+                    Some(n) => {*n},
+                    None    => {current * -10}
+                };
+                current = current * 10 + n_lhs_val;
+            }
+            result.push(current / rhs);
+            current = current % rhs;
         }
-        println!("{}", current);
-        BigNum { digits: 0, raw: result }
+        BigNum { digits: result.len() , raw: result }
     }
 }
 
