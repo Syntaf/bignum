@@ -30,7 +30,9 @@ use arithmatic::{vector_add, vector_sub};
 /// let e = &c * &d;                // 55
 /// let h = &e / 5;                 // 11
 /// ```
-///
+/// Operators are purposely implemented on references to objects.
+/// although copyable, performing arithmatic via copies would be
+/// very inefficient compared to this implementation.
 pub struct BigNum {
     raw: Vec<u32>,
     digits: usize
@@ -83,6 +85,9 @@ impl<'a> Sub for &'a BigNum {
     type Output = BigNum;
 
     fn sub(self, op: &'a BigNum) -> BigNum {
+        // as vector_sub returns a Result<> of the subtraction
+        // (failing is possible), we must match the result and panic upon 
+        // any failure to perform the operation.
         match vector_sub(&self.raw, &op.raw) {
             Ok(a) => {
                 BigNum { digits: a.len(),
@@ -133,14 +138,23 @@ impl<'a> Div<u32> for &'a BigNum {
 
     fn div(self, rhs: u32) -> BigNum {
 
+        // If the right hand side is zero we much catch and panic at a 
+        // division by zero
         if rhs == 0 {
             panic!("divide by zero caught")
         }
 
+        // create a result vector, a peekable iterator into the lhs and
+        // the current value which is copied from peeking at the first 
+        // value
         let mut result: Vec<u32> = Vec::new();
         let mut i = self.raw.iter().peekable();
         let mut current: u32 = *i.next().unwrap();
         while let Some(_) = i.peek() {
+            // while the next value in the lhs is still a valid value, if the
+            // rhs cannot be divided into current, then append the next value
+            // by moving the iterator forward. if the next value is none, ensure
+            // the result of current is zero
             if rhs > current {
                 let n_lhs_val = match i.next() {
                     Some(n) => {*n},
@@ -152,6 +166,9 @@ impl<'a> Div<u32> for &'a BigNum {
             current = current % rhs;
         }
         
+        // if the actual division result is zero, it will be represented by
+        // [0] in the loop above, so we check if the actual operation resulted
+        // in zero. If so, return zero()
         if result == vec![0] {
             inits::Zero::zero()
         } else {
@@ -247,4 +264,14 @@ impl BigNum {
         BigNum { digits: base.digits, raw: base.raw.clone() }
     }
 
+    pub fn to_u32(self) -> Result<u32, Error> {
+        let mut to_val = 0;
+        for val in self.raw.iter().rev() {
+            match to_val.checked_mul(10) {
+                Some(n) => { to_val = n + val; },
+                None    => { return Err() }
+            }
+        }
+        to_val
+    }
 }
