@@ -242,7 +242,7 @@ impl BigNum {
     /// ```
     ///
     pub fn from_vec(t_raw: Vec<u32>) -> BigNum {
-        BigNum { digits: t_raw.len(), raw: t_raw }
+        BigNum { digits: t_raw.len(), raw: t_raw } 
     }
 
     //pub fn from_slice(t_raw: &[u32]) -> BigNum {
@@ -265,13 +265,14 @@ impl BigNum {
     }
 
     pub fn to_u32(self) -> Result<u32, Error> {
-        let mut to_val = 0;
-        for val in self.raw.iter().rev() {
+        let mut to_val: u32 = 0;
+        for val in self.raw.iter() {
             match to_val.checked_mul(10) {
                 Some(n) => { to_val = n + val; },
-                None    => { return Err() }
+                None    => { return Err(Error::new(ErrorType::UnsignedOverflow,
+                                                  "BigNum type is too large to convert to u32"))}
             }
         }
-        to_val
+        Ok(to_val)
     }
 }
