@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["ErrorType","Enum type to specify *what* error happened, is used as a member type in `Error`"]],"struct":[["Error","The Struct returned in `Result` when an Error is encountered, likely in from_str when a non-numeric is found or if an empty string is passed. Contains the *type* of error, and the *cause*"]]});
